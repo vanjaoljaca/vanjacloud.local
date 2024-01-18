@@ -16,7 +16,7 @@ var repositories: RepositoryPath[] = fs.readdirSync(parentDir, { withFileTypes: 
   .filter(dirent => fs.existsSync(`${parentDir}/${dirent.name}/.git`))
   .map(dirent => `${parentDir}/${dirent.name}`);
 
-if (true) { // for test
+if (false) { // for test
   console.log(repositories);
   repositories = [repositories[3]] // for test
 }
