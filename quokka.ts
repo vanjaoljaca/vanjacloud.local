@@ -6,7 +6,23 @@ const Keys = vanjacloud.Keys;
 
 const cdb = new Content.ContentDB(Keys.notion, Content.ContentDB.testdbid);
 
-cdb.save('test4', ['tagged'], 'test transcript2', {
-    filePath: '/usr/home/blah',
-    date: moment().subtract(1, 'day')
-});
+const filePath = '/usr/home/blah12/' + moment().toString();
+
+console.log('filePath', filePath);
+async function test() {
+
+    await cdb.save('test6', ['tagged'], 'not updated test transcript2', {
+        filePath: filePath,
+        date: moment().subtract(1, 'day')
+    });
+
+    await cdb.update(filePath, {
+        transcript: 'updated test transcript3'
+    })
+}
+
+test().then(() => {
+    console.log('done');
+}).catch(err => {
+    console.error(err);
+})
