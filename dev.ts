@@ -1,47 +1,63 @@
 import { generateVideo, Scene } from './handlers/VideoGenerator';
 import fs from 'fs';
+import * as dotenv from 'dotenv';
+dotenv.config(); // Load .env file, must be before vanjacloud.shared
 
-const filePath = './data/test.json';
+import autocommitter from './handlers/autocommit';
 
-let subs;
+async function testSongThing() {
+  const filePath = './data/test.json';
 
-const data = fs.readFileSync(filePath, 'utf8');
-subs = JSON.parse(data);
+  let subs;
 
-type milliseconds = number
-type seconds = number
-interface Segment {
-  "id": number,
-  "seek": milliseconds,
-  "start": seconds,
-  "end": seconds,
-  "text": string,
-  "tokens": number[],
-  "words": Word[]
-}
+  const data = fs.readFileSync(filePath, 'utf8');
+  subs = JSON.parse(data);
 
-interface Word {
-  "start": seconds,
-  "end": seconds,
-  "word": string,
-}
+  type milliseconds = number
+  type seconds = number
+  interface Segment {
+    "id": number,
+    "seek": milliseconds,
+    "start": seconds,
+    "end": seconds,
+    "text": string,
+    "tokens": number[],
+    "words": Word[]
+  }
 
-const introScene = {
-  text: 'Hello world!',
-  duration: subs.segments[0].start,
-  background: './data/imgs/img1.png'
-};
+  interface Word {
+    "start": seconds,
+    "end": seconds,
+    "word": string,
+  }
 
-const scenes = subs.segments.flatMap((sub: Segment) => sub.words)
-  .map((w: Word) => ({
-    text: w.word,
-    duration: w.end - w.start,
+  const introScene = {
+    text: 'Hello world!',
+    duration: subs.segments[0].start,
     background: './data/imgs/img1.png'
-  }));
+  };
 
-scenes.unshift(introScene);
+  const scenes = subs.segments.flatMap((sub: Segment) => sub.words)
+    .map((w: Word) => ({
+      text: w.word,
+      duration: w.end - w.start,
+      background: './data/imgs/img1.png'
+    }));
 
-console.log(scenes.length, 'scenes generated')
+  scenes.unshift(introScene);
 
-generateVideo(scenes, './data/test.mp4').then(() => console.log('Video generated successfully.'))
-  .catch((error) => console.error('Failed to generate video:', error));
+  console.log(scenes.length, 'scenes generated')
+
+  generateVideo(scenes, './data/test.mp4').then(() => console.log('Video generated successfully.'))
+    .catch((error) => console.error('Failed to generate video:', error));
+}
+
+async function testAutoCommitter() {
+  const autocommitHandler = await autocommitter();
+
+  setTimeout(() => {
+    autocommitHandler(); //clean up
+  }, 10000);
+}
+
+testAutoCommitter();
