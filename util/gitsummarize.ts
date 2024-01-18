@@ -29,7 +29,13 @@ async function summarizeChanges(repoPath: RepositoryPath,
     systemPrompt
   })
   const response = await chat.say(diff);
-  console.log('GeneratedMessage:', { repoPath, diff, response })
+
+  console.debug('GeneratedMessage:', {
+    repoPath,
+    // diff,
+    response
+  })
+
   return response;
 }
 
