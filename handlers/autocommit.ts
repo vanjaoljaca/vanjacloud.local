@@ -43,14 +43,17 @@ const getLastCommitTimestamp = async (repoPath: RepositoryPath): Promise<moment.
   }
 };
 
-const tryStageChanges = async (repoPath: RepositoryPath): Promise<boolean> => {
+async function getGitHasChanges(repoPath: RepositoryPath): Promise<boolean> {
+  const status = await execPromise('git status --porcelain', { cwd: repoPath });
+  return status !== '';
+}
+
+const stageChanges = async (repoPath: RepositoryPath) => {
   try {
-    await execPromise('git add .', { cwd: repoPath });
-    const status = await execPromise('git status --porcelain', { cwd: repoPath });
-    return status !== '';
+    return await execPromise('git add .', { cwd: repoPath });
   } catch (error) {
     console.error(`StagingError: ${repoPath}`);
-    return false;
+    throw error;
   }
 };
 
@@ -71,16 +74,12 @@ const getGitDiff = async (repoPath: RepositoryPath): Promise<string | undefined>
 }
 
 
-const commitChanges = async (repoPath: RepositoryPath, message: string): Promise<void> => {
-  if (await tryStageChanges(repoPath)) {
-    try {
-      await execPromise(`git commit -m "${message}"`, { cwd: repoPath });
-      console.log(`Committed: ${repoPath} `);
-    } catch (commitErr) {
-      console.error(`CommitError: ${repoPath} `);
-    }
-  } else {
-    console.log(`NoChanges: ${repoPath} `);
+const commitStagedChanges = async (repoPath: RepositoryPath, message: string): Promise<void> => {
+  try {
+    await execPromise(`git commit -m "${message}"`, { cwd: repoPath });
+    console.log(`Committed: ${repoPath} `);
+  } catch (commitErr) {
+    console.error(`CommitError: ${repoPath} `);
   }
 };
 
@@ -94,10 +93,22 @@ const checkAndCommit = async (): Promise<void> => {
       continue;
     }
 
-    const diff = await getGitDiff(repoPath)
-    const message = await generateCommitMessage(repoPath, diff || '[error getting diff]', getProjectContext(repoPath));
+    if (!await getGitHasChanges(repoPath)) {
+      console.log(`FilterNoChanges: ${repoPath} `);
+      continue;
+    }
 
-    await commitChanges(repoPath, message);
+    await stageChanges(repoPath)
+
+    const diff = await getGitDiff(repoPath)
+    if (!diff) {
+      console.log(`FilterCommitDiffError: ${repoPath} `);
+      continue;
+    }
+
+    const message = await generateCommitMessage(repoPath, diff, getProjectContext(repoPath));
+
+    await commitStagedChanges(repoPath, message);
   }
 };
 
