@@ -16,7 +16,6 @@ import ScrapeDBHandler from './handlers/scrapedb';
 import ContentDBHandler from './handlers/contentdb';
 
 const Keys = vanjacloud.Keys;
-console.log('keys', Keys)
 
 const scrapeDb = new ScrapeDBHandler(prod);
 // const contentDbHandlerCleanup = ContentDBHandler(prod);

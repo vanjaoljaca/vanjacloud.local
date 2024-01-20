@@ -8,8 +8,8 @@ import { generateCommitMessage } from '../util/gitsummarize';
 type RepositoryPath = string;
 
 const parentDir = '..';
-const commitInterval = moment.duration(24, 'seconds');
-const checkInterval = moment.duration(1, 'minutes').asMilliseconds();
+const commitInterval = moment.duration(4, 'hours');
+const checkInterval = moment.duration(1, 'hour');
 
 var repositories: RepositoryPath[] = fs.readdirSync(parentDir, { withFileTypes: true })
   .filter(dirent => dirent.isDirectory())
@@ -65,7 +65,10 @@ function getProjectContext(repoPath: RepositoryPath): string {
 const getGitDiff = async (repoPath: RepositoryPath): Promise<string | undefined> => {
   try {
     const diff = await execPromise('git diff --staged', { cwd: repoPath });
-    console.log('GitDiff:', { repoPath, diff })
+    console.debug('GitDiff:', {
+      repoPath,
+      // diff
+    })
     return diff;
   } catch (error) {
     console.error(`GitDiffError: ${repoPath}`, error);
@@ -112,13 +115,11 @@ const checkAndCommit = async (): Promise<void> => {
   }
 };
 
-setInterval(checkAndCommit, checkInterval);
 
-
-export default function autocommitter() {
+export default function autocommitter(interval?: moment.Duration) {
   console.log('Autocommitter started')
   console.log(repositories);
-  const timeout = setInterval(checkAndCommit, checkInterval);
+  const timeout = setInterval(checkAndCommit, (interval || checkInterval).asMilliseconds());
   checkAndCommit();
   return () => {
     clearInterval(timeout);

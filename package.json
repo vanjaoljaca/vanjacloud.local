@@ -13,11 +13,13 @@
     "fs": "^0.0.1-security",
     "moment": "^2.29.4",
     "node-persistent-queue": "^1.0.5",
+    "openai": "^4.24.7",
     "path": "^0.12.7",
     "sqlite3": "^5.1.7"
   },
   "scripts": {
     "dev": "ts-node index.ts",
+    "play": "ts-node play.ts",
     "test": "rm devdb.sqlite; rm -rf ./dev-watch/* ; rm -rf ./dev-db/* ; cp -r test-data/* dev-watch; yarn dev",
     "test-reprocess": "ts-node index.ts --reprocess",
     "install": "pm2 start index.ts --interpreter='/opt/homebrew/bin/ts-node' --name='vanjacloud.local'  -- --prod; pm2 save",

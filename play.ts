@@ -2,6 +2,8 @@ import { generateVideo, Scene } from './handlers/VideoGenerator';
 import fs from 'fs';
 import * as dotenv from 'dotenv';
 dotenv.config(); // Load .env file, must be before vanjacloud.shared
+import vanjacloud from "vanjacloud.shared.js";
+const keys = vanjacloud.Keys;
 
 import autocommitter from './handlers/autocommit';
 
@@ -60,4 +62,37 @@ async function testAutoCommitter() {
   }, 10000);
 }
 
+import { createTTS } from './util/tts';
+async function testTts() {
+  const path = await createTTS('../vanjacloud.private.js/voices/voice1.wav', 'Hello world!');
+  console.log('done', path)
+}
+
+// from openai import OpenAI
+// client = OpenAI()
+
+// response = client.images.generate(
+
+
+// image_url = response.data[0].url
+
+import OpenAI from 'openai';
+const openai = new OpenAI({
+  apiKey: keys.openai
+});
+
+
+async function testImageGEn() {
+  const r = await openai.images.generate({
+    model: "dall-e-3",
+    prompt: "a red and purple siamese cat",
+    size: "1024x1792",
+    quality: "standard",
+    n: 1,
+  })
+  console.log(r.data[0].url)
+}
+
 testAutoCommitter();
+// testTts();
+// testImageGEn();
