@@ -8,7 +8,7 @@ import { generateCommitMessage } from '../util/gitsummarize';
 type RepositoryPath = string;
 
 const parentDir = '..';
-const commitInterval = moment.duration(4, 'hours');
+const commitInterval = moment.duration(4, 'minutes');
 const checkInterval = moment.duration(1, 'hour');
 
 var repositories: RepositoryPath[] = fs.readdirSync(parentDir, { withFileTypes: true })
