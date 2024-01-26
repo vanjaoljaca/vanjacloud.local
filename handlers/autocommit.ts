@@ -86,6 +86,15 @@ const commitStagedChanges = async (repoPath: RepositoryPath, message: string): P
   }
 };
 
+const pushChanges = async (repoPath: RepositoryPath): Promise<void> => {
+  try {
+    await execPromise('git push', { cwd: repoPath });
+    console.log(`Pushed: ${repoPath} `);
+  } catch (commitErr) {
+    console.error(`PushError: ${repoPath} `);
+  }
+}
+
 const checkAndCommit = async (): Promise<void> => {
   for (let repoPath of repositories) {
     const lastCommitTime = await getLastCommitTimestamp(repoPath);
@@ -112,6 +121,8 @@ const checkAndCommit = async (): Promise<void> => {
     const message = await generateCommitMessage(repoPath, diff, getProjectContext(repoPath));
 
     await commitStagedChanges(repoPath, message);
+
+    pushChanges(repoPath); // no need to wait..
   }
 };
 
