@@ -129,3 +129,6 @@ dist
 dev-db/*
 temp/*
 dev-watch/*
+
+output/*
+data/*
