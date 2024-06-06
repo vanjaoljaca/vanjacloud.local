@@ -33,12 +33,12 @@ export default class SearchPastHandler {
 
     public async run() {
 
-
+        return;
         const latestLocal = await this.localDb.getLatest();
 
         const e = await this.getEmbedding(latestLocal.text);
         console.log(JSON.stringify(e));
-        this.localDb.update(latestLocal.id, { embedding: e.data[0].embedding });
+        // this.localDb.update(latestLocal.id, { embedding: e.data[0].embedding });
         return;
 
         const now = moment();
